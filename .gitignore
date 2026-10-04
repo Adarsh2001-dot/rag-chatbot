@@ -1,0 +1,30 @@
+# Environment
+.env
+*.env
+
+# FAISS index (large binary files — regenerate locally)
+faiss_index/
+*.faiss
+*.pkl
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+env/
+*.egg-info/
+dist/
+build/
+
+# VS Code
+.vscode/
+
+# macOS
+.DS_Store
+
+# Uploaded docs (keep data/ folder but ignore personal files)
+data/*.pdf
+data/*.docx
+!data/sample.txt

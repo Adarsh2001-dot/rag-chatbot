@@ -1,0 +1,35 @@
+Introduction to Retrieval-Augmented Generation (RAG)
+
+Retrieval-Augmented Generation (RAG) is an AI framework that combines the strengths of large language models (LLMs) with external knowledge retrieval. It was introduced by researchers at Facebook AI Research (FAIR) in 2020 to address a fundamental limitation of LLMs: their knowledge is frozen at training time and cannot be updated without retraining.
+
+How RAG Works
+
+The RAG pipeline consists of two main phases: indexing and querying. During indexing, documents are split into smaller chunks, each chunk is converted into a dense vector embedding using an embedding model, and those vectors are stored in a vector database. During querying, the user's question is embedded using the same model, a similarity search finds the most relevant chunks, and those chunks are passed to the LLM as context to generate a grounded answer.
+
+Text Chunking
+
+Chunking is the process of splitting documents into smaller passages before indexing. The goal is to make each chunk semantically self-contained — small enough that its embedding is specific and matchable, but large enough to carry useful context. Typical chunk sizes range from 200 to 1000 characters. A chunk overlap of 10–15% is recommended to prevent information loss at boundaries. The most common splitting strategy is recursive character splitting, which tries to break at paragraph boundaries, then newlines, then sentence boundaries.
+
+Vector Embeddings
+
+Embeddings are dense vector representations of text that capture semantic meaning. Similar texts produce vectors that are geometrically close together in high-dimensional space. The standard embedding model for RAG applications is OpenAI's text-embedding-ada-002, which produces 1,536-dimensional vectors. Open-source alternatives include the all-MiniLM-L6-v2 model from Sentence Transformers, which produces 384-dimensional vectors and runs locally without API costs.
+
+Vector Databases
+
+A vector database stores embeddings and enables fast approximate nearest neighbor (ANN) search. When a query is embedded, the database finds the top-k most similar stored vectors using algorithms like HNSW (Hierarchical Navigable Small World). Popular options include FAISS (a local library developed by Facebook, ideal for prototyping), Pinecone (a fully managed cloud service), Chroma (lightweight and developer-friendly), and pgvector (a PostgreSQL extension for teams already using Postgres).
+
+Similarity Metrics
+
+Cosine similarity is the standard metric for comparing query and chunk vectors. It measures the angle between two vectors rather than their Euclidean distance, making it robust to differences in document length. A cosine similarity score of 1.0 indicates identical direction (same meaning), 0.0 indicates orthogonal vectors (unrelated content), and negative scores are rare in practice.
+
+Common Failure Modes
+
+RAG systems can fail in several ways. Retrieval misses occur when the right chunk exists but is not returned, often because the query phrasing differs significantly from the document language. Context dilution happens when too many weakly-relevant chunks are passed to the LLM, causing it to generate a confused answer. LLM hallucination occurs when the model ignores the provided context and generates from its training data instead, which can be mitigated with a strong system prompt that instructs the model to answer only from the given context.
+
+Advanced Techniques
+
+Several advanced RAG techniques improve performance beyond the basic pipeline. HyDE (Hypothetical Document Embeddings) generates a hypothetical answer to the query and embeds that instead of the raw question, often improving retrieval quality. Parent-child chunking indexes small chunks for precise retrieval but returns their larger parent chunks to the LLM for richer context. Hybrid search combines dense vector search with sparse BM25 keyword search to improve recall on exact-match queries. Reranking uses a separate cross-encoder model to reorder the top-k retrieved chunks by relevance before passing them to the LLM.
+
+Applications
+
+RAG is widely used in enterprise applications for document question-answering, customer support automation, internal knowledge bases, and legal and medical document analysis. It is also used in developer tools for code search and documentation retrieval. The technique allows organizations to build AI applications grounded in their own private data without the cost and risk of fine-tuning a large model.
